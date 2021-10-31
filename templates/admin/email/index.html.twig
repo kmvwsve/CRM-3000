@@ -1,0 +1,50 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+{% form_theme form '@EasyAdmin/symfony-form-themes/bootstrap_5_layout.html.twig' %}
+
+{% block content_title %}Send a mail to customer: {{ customerEmail }}{% endblock %}
+{% block page_actions %}
+    
+{% endblock %}
+
+{% block main %}
+	<div class="col-12">
+		<div class="form-group field-entity">
+			<label class="form-control-label required" for="email_template">Template</label>
+			<div class="form-widget">
+				<select id="email_template" class="form-control" onchange="enabledChange(this, '{{ path('admin_email_getTemplate') }}');">
+				{% for et in emailTemplates %}
+				    <option value="{{ et.id }}">{{ et.name }}</option>
+				{% endfor %}
+				</select>
+			</div>
+		</div>
+	</div>
+    {% block entity_form %}
+        {{ form_start(form) }}
+        {# {{ form_widget(form) }} #}
+        {{ form_end(form) }}
+    {% endblock entity_form %}
+{% endblock %}
+
+{% block body_javascript %}
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript">
+    	function enabledChange(obj, changePath) {
+    		var templateId = $(obj).val();
+		    $.ajax({
+		        type: "POST",
+		        url: changePath,
+		        async: true,
+		        data: { id: templateId },
+		        success: function (json) {
+		        	if(json) {
+		        		$("#form_Title").val(json.title);
+		        		$("#form_Message").val(json.message);
+		        	}
+		        }
+		    });
+		}
+		$("#email_template").trigger("onchange");
+    </script>
+{% endblock %}
+
